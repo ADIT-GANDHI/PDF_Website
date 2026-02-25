@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDFMagic — Full PDF Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #e63946; --navy: #0d1b2a; --cream: #fef9f0;
+  --light: #f8f4ed; --teal: #2a9d8f; --blue: #2563eb;
+  --card: #ffffff; --muted: #6b7280; --border: rgba(13,27,42,0.09);
+  --word-blue: #2b5797;
+  --excel-green: #1D6F42;
+
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); overflow-x: hidden; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5vw; height: 62px;
+  background: rgba(254,249,240,0.95); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.4rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.logo span { background: var(--red); color: white; border-radius: 8px; padding: 2px 8px; font-size: 0.95rem; }
+.nav-badge { font-size: 0.78rem; background: rgba(42,157,143,0.12); color: var(--teal); border: 1px solid rgba(42,157,143,0.25); padding: 4px 12px; border-radius: 100px; font-weight: 500; }
+
+.hero { text-align: center; padding: 64px 5vw 44px; position: relative; }
+.hero::before { content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 700px; height: 500px; background: radial-gradient(ellipse, rgba(230,57,70,0.05) 0%, transparent 70%); pointer-events: none; }
+.hero h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(2rem, 4.5vw, 3.6rem); line-height: 1.1; margin-bottom: 12px; animation: fadeUp 0.5s ease both; }
+.hero h1 em { font-style: normal; color: var(--red); }
+.hero p { color: var(--muted); font-size: 0.97rem; max-width: 440px; margin: 0 auto; line-height: 1.7; animation: fadeUp 0.5s 0.1s ease both; }
+.hero-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 18px; animation: fadeUp 0.5s 0.15s ease both; }
+.pill { font-size: 0.76rem; padding: 4px 12px; border-radius: 100px; font-weight: 500; }
+.pill-green { background: rgba(16,185,129,0.1); color: #059669; }
+.pill-blue { background: rgba(37,99,235,0.1); color: var(--blue); }
+.pill-orange { background: rgba(234,88,12,0.1); color: #c2410c; }
+
+/* TOOL BUTTONS */
+.tools-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 36px 5vw 0; }
+.tool-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 14px; border: 2px solid var(--border);
+  background: white; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  font-size: 0.87rem; font-weight: 500; color: var(--navy); transition: all 0.2s;
+}
+.tool-btn:hover { border-color: var(--red); box-shadow: 0 4px 14px rgba(230,57,70,0.1); }
+.tool-btn.active { background: var(--red); color: white; border-color: var(--red); box-shadow: 0 6px 18px rgba(230,57,70,0.28); }
+.tool-btn .t-icon { font-size: 1.2rem; }
+.tool-btn .t-name { font-weight: 600; font-size: 0.87rem; }
+.tool-btn .t-sub { font-size: 0.72rem; opacity: 0.6; }
+.tool-btn.active .t-sub { opacity: 0.8; }
+.tool-btn .t-info { display: flex; flex-direction: column; }
+
+/* Word button special style */
+.tool-btn.word-btn:hover { border-color: var(--word-blue); box-shadow: 0 4px 14px rgba(43,87,151,0.15); }
+.tool-btn.word-btn.active { background: var(--word-blue); border-color: var(--word-blue); box-shadow: 0 6px 18px rgba(43,87,151,0.3); }
+.new-badge { background: var(--red); color: white; font-size: 0.62rem; font-weight: 700; padding: 1px 6px; border-radius: 100px; margin-left: 4px; vertical-align: middle; }
+.tool-btn.active .new-badge { background: rgba(255,255,255,0.3); }
+.tool-btn.word-btn.active .new-badge { background: rgba(255,255,255,0.3); }
+
+/* Excel button special style */
+.tool-btn.excel-btn:hover { border-color: var(--excel-green); box-shadow: 0 4px 14px rgba(29,111,66,0.15); }
+.tool-btn.excel-btn.active { background: var(--excel-green); border-color: var(--excel-green); box-shadow: 0 6px 18px rgba(29,111,66,0.3); }
+.tool-btn.excel-btn.active .new-badge { background: rgba(255,255,255,0.3); }
+.progress-fill.excel-fill { background: linear-gradient(90deg, var(--excel-green), #4CAF50); }
+.result-box.excel-result { border-color: var(--excel-green); }
+.btn-download.excel-dl { background: var(--excel-green); }
+.btn-download.excel-dl:hover { box-shadow: 0 6px 18px rgba(29,111,66,0.35); }
+.btn-process.excel-btn-proc { background: var(--excel-green); }
+.btn-process.excel-btn-proc:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(29,111,66,0.35); }
+.drop-zone.excel-zone { border-color: rgba(29,111,66,0.3); }
+.drop-zone.excel-zone:hover, .drop-zone.excel-zone.dragover { border-color: var(--excel-green); background: rgba(29,111,66,0.025); }
+.drop-zone.excel-zone .drop-sub b { color: var(--excel-green); }
+.excel-info-box { background: rgba(29,111,66,0.05); border: 1px solid rgba(29,111,66,0.2); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; text-align: left; font-size: 0.84rem; color: #374151; line-height: 1.7; }
+.excel-info-box strong { color: var(--excel-green); }
+
+
+/* WORKSPACE */
+.workspace { max-width: 860px; margin: 36px auto; padding: 0 5vw 80px; }
+.tool-panel { display: none; animation: fadeUp 0.3s ease; }
+.tool-panel.active { display: block; }
+
+/* DROP ZONE */
+.drop-zone {
+  border: 2.5px dashed rgba(230,57,70,0.3); border-radius: 20px;
+  padding: 48px 30px; text-align: center; cursor: pointer;
+  transition: all 0.2s; background: white; position: relative;
+}
+.drop-zone.word-zone { border-color: rgba(43,87,151,0.3); }
+.drop-zone:hover, .drop-zone.dragover { border-color: var(--red); background: rgba(230,57,70,0.025); }
+.drop-zone.word-zone:hover, .drop-zone.word-zone.dragover { border-color: var(--word-blue); background: rgba(43,87,151,0.025); }
+.drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.drop-icon { font-size: 2.6rem; margin-bottom: 12px; }
+.drop-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 6px; }
+.drop-sub { color: var(--muted); font-size: 0.85rem; }
+.drop-sub b { color: var(--red); }
+.drop-zone.word-zone .drop-sub b { color: var(--word-blue); }
+
+/* FILE LIST */
+.file-list { margin-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+.file-item {
+  display: flex; align-items: center; gap: 12px;
+  background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 16px; transition: all 0.15s;
+}
+.file-item .file-icon { font-size: 1.7rem; flex-shrink: 0; }
+.file-item .file-info { flex: 1; min-width: 0; }
+.file-item .file-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-item .file-size { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+.file-item .remove-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--muted); flex-shrink: 0; padding: 4px 6px; border-radius: 8px; transition: all 0.15s; }
+.file-item .remove-btn:hover { background: rgba(230,57,70,0.1); color: var(--red); }
+.file-item .drag-handle { cursor: grab; color: var(--muted); font-size: 0.95rem; flex-shrink: 0; }
+.file-item.dragging { opacity: 0.35; }
+.file-item.drag-over { border-color: var(--red); background: rgba(230,57,70,0.04); }
+
+/* OPTIONS */
+.options-box { background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 22px; margin-top: 16px; }
+.options-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 14px; color: var(--navy); }
+.options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.opt-group { display: flex; flex-direction: column; gap: 5px; }
+.opt-label { font-size: 0.78rem; font-weight: 500; color: var(--muted); }
+.opt-select, .opt-input { padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.86rem; color: var(--navy); outline: none; transition: border-color 0.15s; background: var(--cream); }
+.opt-select:focus, .opt-input:focus { border-color: var(--red); }
+.slider-row { display: flex; align-items: center; gap: 12px; }
+input[type=range] { flex: 1; accent-color: var(--red); }
+.slider-val { font-weight: 700; font-size: 1rem; color: var(--red); min-width: 60px; }
+
+/* PROCESS BAR */
+.process-bar { margin-top: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.btn-process {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--red); color: white; border: none;
+  padding: 13px 28px; border-radius: 100px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-process:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(230,57,70,0.32); transform: translateY(-1px); }
+.btn-process:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-process.word-btn-proc { background: var(--word-blue); }
+.btn-process.word-btn-proc:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(43,87,151,0.35); }
+.btn-clear { background: none; border: 1.5px solid var(--border); color: var(--muted); padding: 13px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.87rem; cursor: pointer; transition: all 0.15s; }
+.btn-clear:hover { border-color: var(--navy); color: var(--navy); }
+
+/* PROGRESS */
+.progress-box { background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 24px; margin-top: 16px; display: none; }
+.progress-box.show { display: block; animation: fadeUp 0.3s ease; }
+.progress-label { font-weight: 600; font-size: 0.92rem; margin-bottom: 12px; display: flex; align-items: center; gap: 9px; }
+.progress-track { background: var(--light); border-radius: 100px; height: 7px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff7070); border-radius: 100px; transition: width 0.5s ease; width: 0%; }
+.progress-fill.blue-fill { background: linear-gradient(90deg, var(--word-blue), #5b9bd5); }
+.progress-status { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+
+/* RESULT */
+.result-box { background: white; border: 2px solid #10b981; border-radius: 18px; padding: 26px; margin-top: 16px; display: none; text-align: center; }
+.result-box.word-result { border-color: var(--word-blue); }
+.result-box.show { display: block; animation: fadeUp 0.4s ease; }
+.result-icon { font-size: 2.8rem; margin-bottom: 10px; }
+.result-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 5px; }
+.result-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 18px; line-height: 1.5; }
+.result-stats { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+.stat-chip { background: var(--light); border-radius: 10px; padding: 8px 14px; font-size: 0.82rem; }
+.stat-chip strong { display: block; font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+.result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn-download { background: #10b981; color: white; border: none; padding: 12px 26px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; }
+.btn-download:hover { box-shadow: 0 6px 18px rgba(16,185,129,0.32); transform: translateY(-1px); }
+.btn-download.word-dl { background: var(--word-blue); }
+.btn-download.word-dl:hover { box-shadow: 0 6px 18px rgba(43,87,151,0.35); }
+.btn-again { background: none; border: 1.5px solid var(--border); color: var(--navy); padding: 12px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.87rem; cursor: pointer; transition: all 0.15s; }
+.btn-again:hover { border-color: var(--navy); }
+
+/* Word result special info box */
+.word-info-box {
+  background: rgba(43,87,151,0.05); border: 1px solid rgba(43,87,151,0.15);
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; text-align: left; font-size: 0.84rem; color: #374151; line-height: 1.7;
+}
+.word-info-box strong { color: var(--word-blue); }
+
+/* Image results grid */
+.images-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 16px 0; text-align: left; }
+.img-result-card { border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: white; }
+.img-result-card img { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; background: #eee; }
+.img-result-card .img-footer { padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; }
+.img-result-card .img-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.img-result-card .img-dl { font-size: 0.95rem; cursor: pointer; text-decoration: none; }
+
+/* Spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+.spinner.dark-spinner { border-color: rgba(13,27,42,0.15); border-top-color: var(--navy); }
+
+/* Error box */
+.error-box { background: rgba(230,57,70,0.05); border: 1.5px solid rgba(230,57,70,0.25); border-radius: 14px; padding: 16px 20px; margin-top: 14px; font-size: 0.87rem; color: #b91c1c; display: none; }
+.error-box.show { display: block; animation: fadeUp 0.3s ease; }
+
+/* Notification */
+.notif { position: fixed; bottom: 22px; right: 22px; background: var(--navy); color: white; padding: 13px 18px; border-radius: 12px; font-size: 0.86rem; font-weight: 500; box-shadow: 0 8px 28px rgba(0,0,0,0.18); z-index: 999; animation: fadeUp 0.3s ease; display: flex; align-items: center; gap: 8px; max-width: 300px; }
+.notif.error-n { background: var(--red); }
+.notif.success-n { background: #059669; }
+
+/* Footer */
+.footer { background: var(--navy); color: rgba(255,255,255,0.4); padding: 24px 5vw; text-align: center; font-size: 0.8rem; }
+.footer strong { color: rgba(255,255,255,0.75); }
+
+/* Pages hint */
+.pages-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { .tools-nav { gap: 7px; } .tool-btn { padding: 10px 14px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo"><span>PDF</span>Magic</a>
+  <span class="nav-badge">🔒 Files never leave your server</span>
+</nav>
+
+<section class="hero">
+  <h1>PDF Tools with<br><em>Real Backend Power</em></h1>
+  <p>All processing runs on your own Node.js server. Private, fast, and fully open-source.</p>
+  <div class="hero-pills">
+    <span class="pill pill-green">✓ 100% Private</span>
+    <span class="pill pill-blue">✓ Node.js + Express</span>
+    <span class="pill pill-orange">✓ Auto file cleanup</span>
+  </div>
+</section>
+
+<!-- TOOL SELECTOR -->
+<div class="tools-nav">
+  <button class="tool-btn active" onclick="selectTool('merge', this)">
+    <span class="t-icon">🔀</span>
+    <span class="t-info"><span class="t-name">Merge PDF</span><span class="t-sub">Combine files</span></span>
+  </button>
+  <button class="tool-btn" onclick="selectTool('split', this)">
+    <span class="t-icon">✂️</span>
+    <span class="t-info"><span class="t-name">Split PDF</span><span class="t-sub">Extract pages</span></span>
+  </button>
+  <button class="tool-btn" onclick="selectTool('compress', this)">
+    <span class="t-icon">🗜️</span>
+    <span class="t-info"><span class="t-name">Compress PDF</span><span class="t-sub">Reduce size</span></span>
+  </button>
+  <button class="tool-btn" onclick="selectTool('pdf2img', this)">
+    <span class="t-icon">🖼️</span>
+    <span class="t-info"><span class="t-name">PDF → Images</span><span class="t-sub">Pages as JPG</span></span>
+  </button>
+  <button class="tool-btn" onclick="selectTool('img2pdf', this)">
+    <span class="t-icon">📷</span>
+    <span class="t-info"><span class="t-name">Images → PDF</span><span class="t-sub">Bundle images</span></span>
+  </button>
+  <button class="tool-btn word-btn" onclick="selectTool('pdf2word', this)">
+    <span class="t-icon">📝</span>
+    <span class="t-info">
+      <span class="t-name">PDF → Word <span class="new-badge">NEW</span></span>
+      <span class="t-sub">Backend conversion</span>
+    </span>
+  </button>
+  <button class="tool-btn excel-btn" onclick="selectTool('excel2pdf', this)">
+    <span class="t-icon">📊</span>
+    <span class="t-info">
+      <span class="t-name">Excel → PDF <span class="new-badge">NEW</span></span>
+      <span class="t-sub">Spreadsheet to PDF</span>
+    </span>
+  </button>
+  <button class="tool-btn excel-btn" onclick="selectTool('pdf2excel', this)">
+    <span class="t-icon">🔢</span>
+    <span class="t-info">
+      <span class="t-name">PDF → Excel <span class="new-badge">NEW</span></span>
+      <span class="t-sub">Extract tables</span>
+    </span>
+  </button>
+</div>
+
+<div class="workspace">
+
+  <!-- ===== MERGE ===== -->
+  <div class="tool-panel active" id="panel-merge">
+    <div class="drop-zone" id="dz-merge">
+      <input type="file" accept=".pdf" multiple onchange="addFilesLocal('merge', this.files)">
+      <div class="drop-icon">📂</div>
+      <div class="drop-title">Drop PDF files here</div>
+      <div class="drop-sub">Click or drag <b>multiple PDFs</b> — reorder by dragging</div>
+    </div>
+    <div class="file-list" id="fl-merge"></div>
+    <div class="options-box" id="opt-merge" style="display:none">
+      <div class="options-title">⚙️ Options — drag files above to set order</div>
+      <p style="font-size:0.83rem;color:var(--muted)">Files will be merged in the order listed above.</p>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process" id="btn-merge" onclick="apiCall('merge')" disabled>🔀 Merge PDFs</button>
+      <button class="btn-clear" onclick="clearTool('merge')">Clear All</button>
+    </div>
+    <div class="error-box" id="err-merge"></div>
+    <div class="progress-box" id="prog-merge">
+      <div class="progress-label"><div class="spinner"></div> Merging on server...</div>
+      <div class="progress-track"><div class="progress-fill" id="pf-merge"></div></div>
+      <div class="progress-status" id="ps-merge">Uploading files...</div>
+    </div>
+    <div class="result-box" id="res-merge">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Merged Successfully!</div>
+      <div class="result-sub" id="res-merge-sub"></div>
+      <div class="result-actions">
+        <a class="btn-download" id="dl-merge" href="#">⬇️ Download Merged PDF</a>
+        <button class="btn-again" onclick="clearTool('merge')">Merge Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SPLIT ===== -->
+  <div class="tool-panel" id="panel-split">
+    <div class="drop-zone" id="dz-split">
+      <input type="file" accept=".pdf" onchange="addFilesLocal('split', this.files)">
+      <div class="drop-icon">✂️</div>
+      <div class="drop-title">Drop a PDF to split</div>
+      <div class="drop-sub">Click to <b>select a PDF file</b></div>
+    </div>
+    <div class="file-list" id="fl-split"></div>
+    <div class="options-box" id="opt-split" style="display:none">
+      <div class="options-title">⚙️ Split Options</div>
+      <div class="options-grid">
+        <div class="opt-group">
+          <div class="opt-label">Split Mode</div>
+          <select class="opt-select" id="split-mode" onchange="toggleSplitMode()">
+            <option value="all">All pages (one file each)</option>
+            <option value="range">Custom page range</option>
+            <option value="every">Every N pages</option>
+          </select>
+        </div>
+        <div class="opt-group" id="split-range-group" style="display:none">
+          <div class="opt-label">Page range</div>
+          <input type="text" class="opt-input" id="split-range" placeholder="e.g. 1-3, 5, 7-9">
+          <div class="pages-hint" id="split-page-hint">Upload a PDF to see page count</div>
+        </div>
+        <div class="opt-group" id="split-every-group" style="display:none">
+          <div class="opt-label">Pages per chunk</div>
+          <input type="number" class="opt-input" id="split-n" value="1" min="1" style="width:90px">
+        </div>
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process" id="btn-split" onclick="apiCall('split')" disabled>✂️ Split PDF</button>
+      <button class="btn-clear" onclick="clearTool('split')">Clear</button>
+    </div>
+    <div class="error-box" id="err-split"></div>
+    <div class="progress-box" id="prog-split">
+      <div class="progress-label"><div class="spinner"></div> Splitting on server...</div>
+      <div class="progress-track"><div class="progress-fill" id="pf-split"></div></div>
+      <div class="progress-status" id="ps-split">Uploading...</div>
+    </div>
+    <div class="result-box" id="res-split">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Split Complete!</div>
+      <div class="result-sub" id="res-split-sub"></div>
+      <div class="result-actions" id="res-split-actions"></div>
+    </div>
+  </div>
+
+  <!-- ===== COMPRESS ===== -->
+  <div class="tool-panel" id="panel-compress">
+    <div class="drop-zone" id="dz-compress">
+      <input type="file" accept=".pdf" onchange="addFilesLocal('compress', this.files)">
+      <div class="drop-icon">🗜️</div>
+      <div class="drop-title">Drop a PDF to compress</div>
+      <div class="drop-sub">Click to <b>select a PDF file</b></div>
+    </div>
+    <div class="file-list" id="fl-compress"></div>
+    <div class="options-box" id="opt-compress" style="display:none">
+      <div class="options-title">⚙️ Compression Level</div>
+      <div class="slider-row">
+        <span style="font-size:0.78rem;color:var(--muted)">Low</span>
+        <input type="range" id="compress-level" min="1" max="3" value="2" oninput="updateCompressLabel()">
+        <span style="font-size:0.78rem;color:var(--muted)">High</span>
+        <span class="slider-val" id="compress-label">Medium</span>
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process" id="btn-compress" onclick="apiCall('compress')" disabled>🗜️ Compress PDF</button>
+      <button class="btn-clear" onclick="clearTool('compress')">Clear</button>
+    </div>
+    <div class="error-box" id="err-compress"></div>
+    <div class="progress-box" id="prog-compress">
+      <div class="progress-label"><div class="spinner"></div> Compressing on server...</div>
+      <div class="progress-track"><div class="progress-fill" id="pf-compress"></div></div>
+      <div class="progress-status" id="ps-compress">Uploading...</div>
+    </div>
+    <div class="result-box" id="res-compress">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Compressed!</div>
+      <div class="result-sub" id="res-compress-sub"></div>
+      <div class="result-stats" id="res-compress-stats"></div>
+      <div class="result-actions">
+        <a class="btn-download" id="dl-compress" href="#">⬇️ Download Compressed PDF</a>
+        <button class="btn-again" onclick="clearTool('compress')">Compress Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PDF TO IMAGE (client-side, upload to server for ZIP) ===== -->
+  <div class="tool-panel" id="panel-pdf2img">
+    <div class="drop-zone" id="dz-pdf2img">
+      <input type="file" accept=".pdf" onchange="addFilesLocal('pdf2img', this.files)">
+      <div class="drop-icon">🖼️</div>
+      <div class="drop-title">Drop a PDF to convert</div>
+      <div class="drop-sub">Click to <b>select a PDF file</b></div>
+    </div>
+    <div class="file-list" id="fl-pdf2img"></div>
+    <div class="options-box" id="opt-pdf2img" style="display:none">
+      <div class="options-title">⚙️ Image Options</div>
+      <div class="options-grid">
+        <div class="opt-group">
+          <div class="opt-label">Format</div>
+          <select class="opt-select" id="img-format">
+            <option value="image/png">PNG (best quality)</option>
+            <option value="image/jpeg" selected>JPEG (smaller)</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <div class="opt-label">Resolution</div>
+          <select class="opt-select" id="img-dpi">
+            <option value="1">72 DPI (screen)</option>
+            <option value="2" selected>150 DPI (standard)</option>
+            <option value="3">300 DPI (print)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process" id="btn-pdf2img" onclick="runPdf2ImgClient()" disabled>🖼️ Convert to Images</button>
+      <button class="btn-clear" onclick="clearTool('pdf2img')">Clear</button>
+    </div>
+    <div class="error-box" id="err-pdf2img"></div>
+    <div class="progress-box" id="prog-pdf2img">
+      <div class="progress-label"><div class="spinner"></div> <span id="pdf2img-prog-label">Rendering pages...</span></div>
+      <div class="progress-track"><div class="progress-fill" id="pf-pdf2img"></div></div>
+      <div class="progress-status" id="ps-pdf2img">Loading PDF...</div>
+    </div>
+    <div class="result-box" id="res-pdf2img">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Conversion Complete!</div>
+      <div class="result-sub" id="res-pdf2img-sub"></div>
+      <div class="images-grid" id="img-grid"></div>
+      <div class="result-actions">
+        <button class="btn-download" id="dl-pdf2img-zip" onclick="zipAndDownloadImages()">⬇️ Download ZIP (server)</button>
+        <button class="btn-download" onclick="downloadAllImagesLocal()" style="background:#059669">⬇️ Download All (local)</button>
+        <button class="btn-again" onclick="clearTool('pdf2img')">Convert Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== IMAGE TO PDF ===== -->
+  <div class="tool-panel" id="panel-img2pdf">
+    <div class="drop-zone" id="dz-img2pdf">
+      <input type="file" accept="image/*" multiple onchange="addFilesLocal('img2pdf', this.files)">
+      <div class="drop-icon">📷</div>
+      <div class="drop-title">Drop images here</div>
+      <div class="drop-sub">Click to <b>select JPG/PNG images</b> (drag to reorder)</div>
+    </div>
+    <div class="file-list" id="fl-img2pdf"></div>
+    <div class="options-box" id="opt-img2pdf" style="display:none">
+      <div class="options-title">⚙️ PDF Options</div>
+      <div class="options-grid">
+        <div class="opt-group">
+          <div class="opt-label">Page size</div>
+          <select class="opt-select" id="pdf-page-size">
+            <option value="A4">A4</option>
+            <option value="Letter">US Letter</option>
+            <option value="fit">Fit to image</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <div class="opt-label">Orientation</div>
+          <select class="opt-select" id="pdf-orientation">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+            <option value="auto">Auto (per image)</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <div class="opt-label">Margin</div>
+          <select class="opt-select" id="pdf-margin">
+            <option value="0">No margin</option>
+            <option value="20" selected>Small (20px)</option>
+            <option value="40">Medium (40px)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process" id="btn-img2pdf" onclick="apiCall('img2pdf')" disabled>📄 Create PDF</button>
+      <button class="btn-clear" onclick="clearTool('img2pdf')">Clear All</button>
+    </div>
+    <div class="error-box" id="err-img2pdf"></div>
+    <div class="progress-box" id="prog-img2pdf">
+      <div class="progress-label"><div class="spinner"></div> Creating PDF on server...</div>
+      <div class="progress-track"><div class="progress-fill" id="pf-img2pdf"></div></div>
+      <div class="progress-status" id="ps-img2pdf">Uploading images...</div>
+    </div>
+    <div class="result-box" id="res-img2pdf">
+      <div class="result-icon">✅</div>
+      <div class="result-title">PDF Created!</div>
+      <div class="result-sub" id="res-img2pdf-sub"></div>
+      <div class="result-actions">
+        <a class="btn-download" id="dl-img2pdf" href="#">⬇️ Download PDF</a>
+        <button class="btn-again" onclick="clearTool('img2pdf')">Create Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PDF TO WORD (⭐ NEW BACKEND FEATURE) ===== -->
+  <div class="tool-panel" id="panel-pdf2word">
+    <div class="drop-zone word-zone" id="dz-pdf2word">
+      <input type="file" accept=".pdf" onchange="addFilesLocal('pdf2word', this.files)">
+      <div class="drop-icon">📝</div>
+      <div class="drop-title">Drop a PDF to convert to Word</div>
+      <div class="drop-sub">Click to <b>select a PDF file</b> — processed server-side</div>
+    </div>
+    <div class="file-list" id="fl-pdf2word"></div>
+    <div class="options-box" id="opt-pdf2word" style="display:none">
+      <div class="options-title">⚙️ Conversion Options</div>
+      <div style="font-size:0.84rem;color:var(--muted);line-height:1.7;padding:4px 0;">
+        <strong style="color:var(--navy)">How it works:</strong> The server extracts text from your PDF using <code>pdf-parse</code>, 
+        detects headings, paragraphs, and bullet lists using smart heuristics, then assembles a structured <code>.docx</code> 
+        file using the <code>docx</code> library. Best results with text-based PDFs.
+      </div>
+      <br>
+      <div class="options-grid">
+        <div class="opt-group" style="grid-column:1/-1">
+          <div class="opt-label">Output format</div>
+          <select class="opt-select" id="word-format" style="max-width:260px">
+            <option value="docx">Microsoft Word (.docx)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process word-btn-proc" id="btn-pdf2word" onclick="apiCall('pdf2word')" disabled>📝 Convert to Word</button>
+      <button class="btn-clear" onclick="clearTool('pdf2word')">Clear</button>
+    </div>
+    <div class="error-box" id="err-pdf2word"></div>
+    <div class="progress-box" id="prog-pdf2word">
+      <div class="progress-label"><div class="spinner"></div> Converting on server...</div>
+      <div class="progress-track"><div class="progress-fill blue-fill" id="pf-pdf2word"></div></div>
+      <div class="progress-status" id="ps-pdf2word">Uploading PDF...</div>
+    </div>
+    <div class="result-box word-result" id="res-pdf2word">
+      <div class="result-icon">📄</div>
+      <div class="result-title">Word Document Ready!</div>
+      <div class="result-sub" id="res-pdf2word-sub"></div>
+      <div class="result-stats" id="res-pdf2word-stats"></div>
+      <div class="word-info-box">
+        <strong>📌 Tips for best results:</strong> This tool works best with text-based PDFs. 
+        Scanned or image-based PDFs require OCR preprocessing. Headings, paragraphs, and bullet points are auto-detected.
+        Complex layouts (multi-column, tables) may need manual cleanup in Word.
+      </div>
+      <div class="result-actions">
+        <a class="btn-download word-dl" id="dl-pdf2word" href="#">⬇️ Download .docx File</a>
+        <button class="btn-again" onclick="clearTool('pdf2word')">Convert Another</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== EXCEL TO PDF ===== -->
+  <div class="tool-panel" id="panel-excel2pdf">
+    <div class="drop-zone excel-zone" id="dz-excel2pdf">
+      <input type="file" accept=".xlsx,.xls,.xlsm,.csv" onchange="addFilesLocal('excel2pdf', this.files)">
+      <div class="drop-icon">📊</div>
+      <div class="drop-title">Drop an Excel file to convert</div>
+      <div class="drop-sub">Click to <b>select .xlsx, .xls, .xlsm or .csv</b> — processed server-side</div>
+    </div>
+    <div class="file-list" id="fl-excel2pdf"></div>
+    <div class="options-box" id="opt-excel2pdf" style="display:none">
+      <div class="options-title">⚙️ PDF Output Options</div>
+      <div class="options-grid">
+        <div class="opt-group">
+          <div class="opt-label">Orientation</div>
+          <select class="opt-select" id="excel2pdf-orientation">
+            <option value="landscape" selected>Landscape (recommended)</option>
+            <option value="portrait">Portrait</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <div class="opt-label">Fit to page width</div>
+          <select class="opt-select" id="excel2pdf-fit">
+            <option value="true" selected>Yes — scale to fit</option>
+            <option value="false">No — natural size</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(29,111,66,0.06);border-radius:10px;font-size:0.82rem;color:var(--muted);line-height:1.6;">
+        <strong style="color:var(--excel-green)">How it works:</strong> The server reads your Excel workbook with ExcelJS, 
+        renders each sheet's cells — including colors, bold text, and numeric formatting — into a 
+        structured PDF using pdf-lib. All visible sheets are included as separate page groups.
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process excel-btn-proc" id="btn-excel2pdf" onclick="apiCall('excel2pdf')" disabled>📊 Convert to PDF</button>
+      <button class="btn-clear" onclick="clearTool('excel2pdf')">Clear</button>
+    </div>
+    <div class="error-box" id="err-excel2pdf"></div>
+    <div class="progress-box" id="prog-excel2pdf">
+      <div class="progress-label"><div class="spinner"></div> Converting Excel on server...</div>
+      <div class="progress-track"><div class="progress-fill excel-fill" id="pf-excel2pdf"></div></div>
+      <div class="progress-status" id="ps-excel2pdf">Uploading spreadsheet...</div>
+    </div>
+    <div class="result-box excel-result" id="res-excel2pdf">
+      <div class="result-icon">✅</div>
+      <div class="result-title">PDF Created from Excel!</div>
+      <div class="result-sub" id="res-excel2pdf-sub"></div>
+      <div class="result-stats" id="res-excel2pdf-stats"></div>
+      <div class="result-actions">
+        <a class="btn-download excel-dl" id="dl-excel2pdf" href="#">⬇️ Download PDF</a>
+        <button class="btn-again" onclick="clearTool('excel2pdf')">Convert Another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PDF TO EXCEL ===== -->
+  <div class="tool-panel" id="panel-pdf2excel">
+    <div class="drop-zone excel-zone" id="dz-pdf2excel">
+      <input type="file" accept=".pdf" onchange="addFilesLocal('pdf2excel', this.files)">
+      <div class="drop-icon">🔢</div>
+      <div class="drop-title">Drop a PDF to extract to Excel</div>
+      <div class="drop-sub">Click to <b>select a PDF file</b> — tables auto-detected server-side</div>
+    </div>
+    <div class="file-list" id="fl-pdf2excel"></div>
+    <div class="options-box" id="opt-pdf2excel" style="display:none">
+      <div class="options-title">⚙️ Extraction Options</div>
+      <div style="font-size:0.84rem;color:var(--muted);line-height:1.7;padding:4px 0 12px;">
+        <strong style="color:var(--excel-green)">How it works:</strong> The server extracts text using <code>pdf-parse</code> 
+        with a custom renderer that preserves X/Y coordinates to reconstruct rows and columns. 
+        Smart heuristics then detect table structures, apply numeric formatting, and build a 
+        structured <code>.xlsx</code> workbook with headers, alternating row colors, auto-fit columns, and frozen header rows.
+      </div>
+      <div class="excel-info-box">
+        <strong>📌 Best results with:</strong> PDFs that contain real text (not scanned images), 
+        tables with clear column separation (2+ spaces between columns), and structured reports or data exports.
+        Each detected table becomes its own sheet. An Overview sheet is always included.
+      </div>
+    </div>
+    <div class="process-bar">
+      <button class="btn-process excel-btn-proc" id="btn-pdf2excel" onclick="apiCall('pdf2excel')" disabled>🔢 Extract to Excel</button>
+      <button class="btn-clear" onclick="clearTool('pdf2excel')">Clear</button>
+    </div>
+    <div class="error-box" id="err-pdf2excel"></div>
+    <div class="progress-box" id="prog-pdf2excel">
+      <div class="progress-label"><div class="spinner"></div> Extracting tables on server...</div>
+      <div class="progress-track"><div class="progress-fill excel-fill" id="pf-pdf2excel"></div></div>
+      <div class="progress-status" id="ps-pdf2excel">Uploading PDF...</div>
+    </div>
+    <div class="result-box excel-result" id="res-pdf2excel">
+      <div class="result-icon">📊</div>
+      <div class="result-title">Excel Workbook Ready!</div>
+      <div class="result-sub" id="res-pdf2excel-sub"></div>
+      <div class="result-stats" id="res-pdf2excel-stats"></div>
+      <div class="result-actions">
+        <a class="btn-download excel-dl" id="dl-pdf2excel" href="#">⬇️ Download .xlsx File</a>
+        <button class="btn-again" onclick="clearTool('pdf2excel')">Convert Another</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /workspace -->
+
+<footer class="footer">
+  <strong>PDFMagic</strong> — Node.js + Express · pdf-lib · pdf-parse · docx · exceljs · PDF.js<br>
+  8 tools total · Files auto-deleted after 1 hour · All processing on your own server.
+</footer>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── State ──
+const state = {
+  merge: { files: [] }, split: { files: [] }, compress: { files: [] },
+  pdf2img: { files: [], images: [] }, img2pdf: { files: [] }, pdf2word: { files: [] },
+  excel2pdf: { files: [] }, pdf2excel: { files: [] }
+};
+
+// ── Tool switcher ──
+function selectTool(tool, btn) {
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tool).classList.add('active');
+}
+
+// ── File management ──
+function addFilesLocal(tool, fileList) {
+  const files = Array.from(fileList);
+  if (!files.length) return;
+  const single = ['split','compress','pdf2img','pdf2word','excel2pdf','pdf2excel'].includes(tool);
+  if (single) state[tool].files = [files[0]];
+  else state[tool].files.push(...files);
+  renderFileList(tool);
+  updateBtn(tool);
+}
+
+function renderFileList(tool) {
+  const fl = document.getElementById('fl-' + tool);
+  const files = state[tool].files;
+  const isImg = tool === 'img2pdf';
+  const canDrag = ['merge','img2pdf'].includes(tool);
+
+  fl.innerHTML = files.map((f, i) => `
+    <div class="file-item" draggable="${canDrag}" 
+      ondragstart="ds(event,${i},'${tool}')" ondragover="dov(event)" 
+      ondrop="dd(event,${i},'${tool}')" ondragend="de(event)">
+      ${canDrag ? '<span class="drag-handle">⠿</span>' : ''}
+      <span class="file-icon">${isImg ? '🖼️' : '📄'}</span>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${fmtSize(f.size)}</div>
+      </div>
+      <button class="remove-btn" onclick="removeFile('${tool}',${i})">✕</button>
+    </div>
+  `).join('');
+
+  const opt = document.getElementById('opt-' + tool);
+  if (opt) opt.style.display = files.length ? 'block' : 'none';
+
+  if (tool === 'split' && files.length) {
+    getPageCount(files[0]).then(n => {
+      document.getElementById('split-page-hint').textContent = `This PDF has ${n} pages`;
+      document.getElementById('split-n').max = n;
+    }).catch(() => {});
+  }
+}
+
+function removeFile(tool, i) {
+  state[tool].files.splice(i, 1);
+  renderFileList(tool);
+  updateBtn(tool);
+}
+
+function clearTool(tool) {
+  state[tool].files = [];
+  if (tool === 'pdf2img') state[tool].images = [];
+  renderFileList(tool);
+  updateBtn(tool);
+  hide('prog-' + tool); hide('res-' + tool); hide('err-' + tool);
+}
+
+function updateBtn(tool) {
+  const btn = document.getElementById('btn-' + tool);
+  if (!btn) return;
+  const n = state[tool].files.length;
+  btn.disabled = tool === 'merge' ? n < 2 : n < 1;
+}
+
+// ── Drag reorder ──
+let _di = null;
+function ds(e, i, t) { _di = {i,t}; e.currentTarget.classList.add('dragging'); }
+function de(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('.file-item').forEach(el=>el.classList.remove('drag-over')); }
+function dov(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dd(e, toI, t) {
+  e.preventDefault();
+  if (!_di || _di.t !== t) return;
+  const arr = state[t].files;
+  const [m] = arr.splice(_di.i, 1);
+  arr.splice(toI, 0, m);
+  renderFileList(t);
+}
+
+// ── Helpers ──
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+function show(id) { const e=document.getElementById(id); if(e){e.style.display='block'; e.classList.add('show');} }
+function hide(id) { const e=document.getElementById(id); if(e){e.style.display='none'; e.classList.remove('show');} }
+function setP(tool, pct, status) {
+  const pf = document.getElementById('pf-'+tool);
+  const ps = document.getElementById('ps-'+tool);
+  if (pf) pf.style.width = pct + '%';
+  if (ps && status) ps.textContent = status;
+}
+function showErr(tool, msg) {
+  const el = document.getElementById('err-' + tool);
+  if (!el) return;
+  el.textContent = '⚠️ ' + msg;
+  show('err-' + tool);
+}
+function notify(msg, type='') {
+  const n = document.createElement('div');
+  n.className = 'notif ' + (type==='error'?'error-n':type==='success'?'success-n':'');
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 3500);
+}
+async function getPageCount(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  return pdf.numPages;
+}
+function updateCompressLabel() {
+  const v = parseInt(document.getElementById('compress-level').value);
+  document.getElementById('compress-label').textContent = ['','Low','Medium','High'][v];
+}
+function toggleSplitMode() {
+  const m = document.getElementById('split-mode').value;
+  document.getElementById('split-range-group').style.display = m==='range' ? 'block' : 'none';
+  document.getElementById('split-every-group').style.display = m==='every' ? 'block' : 'none';
+}
+
+// ── Generic API caller ──
+async function apiCall(tool) {
+  hide('err-'+tool); hide('res-'+tool);
+  show('prog-'+tool);
+  document.getElementById('btn-'+tool).disabled = true;
+  setP(tool, 5, 'Preparing...');
+
+  try {
+    const fd = new FormData();
+    const simulate = (start, end, label, ms) => new Promise(r => {
+      let pct = start;
+      const step = () => { pct = Math.min(end, pct + (end-start)/8); setP(tool, pct, label); if(pct<end) setTimeout(step,ms/8); else r(); };
+      step();
+    });
+
+    // Build FormData per tool
+    if (tool === 'merge') {
+      state.merge.files.forEach(f => fd.append('files', f));
+      await simulate(5,40,'Uploading files...',1500);
+    } else if (tool === 'split') {
+      fd.append('file', state.split.files[0]);
+      fd.append('mode', document.getElementById('split-mode').value);
+      fd.append('range', document.getElementById('split-range').value || '');
+      fd.append('everyN', document.getElementById('split-n').value || '1');
+      await simulate(5,40,'Uploading PDF...',800);
+    } else if (tool === 'compress') {
+      fd.append('file', state.compress.files[0]);
+      fd.append('level', document.getElementById('compress-level').value);
+      await simulate(5,40,'Uploading PDF...',800);
+    } else if (tool === 'img2pdf') {
+      state.img2pdf.files.forEach(f => fd.append('files', f));
+      fd.append('pageSize', document.getElementById('pdf-page-size').value);
+      fd.append('orientation', document.getElementById('pdf-orientation').value);
+      fd.append('margin', document.getElementById('pdf-margin').value);
+      await simulate(5,40,'Uploading images...',1200);
+    } else if (tool === 'pdf2word') {
+      fd.append('file', state.pdf2word.files[0]);
+      await simulate(5,30,'Uploading PDF...',800);
+    } else if (tool === 'excel2pdf') {
+      fd.append('file', state.excel2pdf.files[0]);
+      fd.append('orientation', document.getElementById('excel2pdf-orientation').value);
+      fd.append('fitToPage', document.getElementById('excel2pdf-fit').value);
+      await simulate(5,35,'Uploading spreadsheet...',900);
+    } else if (tool === 'pdf2excel') {
+      fd.append('file', state.pdf2excel.files[0]);
+      await simulate(5,30,'Uploading PDF...',800);
+    }
+
+    setP(tool, 50, 'Processing on server...');
+    const endpointMap = {
+      merge: '/api/merge', split: '/api/split', compress: '/api/compress',
+      img2pdf: '/api/img2pdf', pdf2word: '/api/pdf2word',
+      excel2pdf: '/api/excel2pdf', pdf2excel: '/api/pdf2excel'
+    };
+
+    const resp = await fetch(endpointMap[tool], { method: 'POST', body: fd });
+    const data = await resp.json();
+
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Server error');
+    }
+
+    setP(tool, 95, 'Finalizing...');
+    await new Promise(r => setTimeout(r, 400));
+    setP(tool, 100, 'Done!');
+    await new Promise(r => setTimeout(r, 300));
+
+    hide('prog-'+tool);
+    handleResult(tool, data);
+
+  } catch(err) {
+    hide('prog-'+tool);
+    showErr(tool, err.message);
+    document.getElementById('btn-'+tool).disabled = false;
+    notify(err.message, 'error');
+  }
+}
+
+// ── Result handlers ──
+function handleResult(tool, data) {
+  show('res-' + tool);
+
+  if (tool === 'merge') {
+    document.getElementById('res-merge-sub').textContent =
+      `${data.pagesMerged} PDFs merged · Output: ${fmtSize(data.outputSize)} (was ${fmtSize(data.originalSize)})`;
+    document.getElementById('dl-merge').href = data.downloadUrl;
+    document.getElementById('dl-merge').download = data.filename;
+  }
+
+  else if (tool === 'split') {
+    document.getElementById('res-split-sub').textContent =
+      `Created ${data.files.length} file${data.files.length>1?'s':''} from ${data.totalPages} pages`;
+    const actions = document.getElementById('res-split-actions');
+    actions.innerHTML = '';
+    if (data.mode === 'zip') {
+      const a = document.createElement('a');
+      a.className = 'btn-download'; a.href = data.zipUrl; a.download = data.zipName;
+      a.textContent = `⬇️ Download ZIP (${data.files.length} files)`;
+      actions.appendChild(a);
+    } else {
+      const a = document.createElement('a');
+      a.className = 'btn-download'; a.href = data.files[0].downloadUrl; a.download = data.files[0].filename;
+      a.textContent = '⬇️ Download PDF';
+      actions.appendChild(a);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'btn-again'; btn.textContent = 'Split Another';
+    btn.onclick = () => clearTool('split');
+    actions.appendChild(btn);
+  }
+
+  else if (tool === 'compress') {
+    const saved = data.savedPercent;
+    document.getElementById('res-compress-sub').textContent = saved > 0
+      ? `Saved ${data.savedPercent}% — ${fmtSize(data.originalSize)} → ${fmtSize(data.outputSize)}`
+      : `File already optimized · Output: ${fmtSize(data.outputSize)}`;
+    document.getElementById('res-compress-stats').innerHTML = `
+      <div class="stat-chip"><strong>${fmtSize(data.originalSize)}</strong>Original</div>
+      <div class="stat-chip"><strong>${fmtSize(data.outputSize)}</strong>Compressed</div>
+      <div class="stat-chip"><strong>${saved}%</strong>Saved</div>
+    `;
+    document.getElementById('dl-compress').href = data.downloadUrl;
+    document.getElementById('dl-compress').download = data.filename;
+  }
+
+  else if (tool === 'img2pdf') {
+    document.getElementById('res-img2pdf-sub').textContent =
+      `${data.imagesProcessed} images → ${data.pageCount}-page PDF · ${fmtSize(data.outputSize)}`;
+    document.getElementById('dl-img2pdf').href = data.downloadUrl;
+    document.getElementById('dl-img2pdf').download = data.filename;
+  }
+
+  else if (tool === 'excel2pdf') {
+    document.getElementById('res-excel2pdf-sub').textContent =
+      `${data.sheetCount} sheet${data.sheetCount>1?'s':''} converted · ${data.pageCount} PDF page${data.pageCount>1?'s':''} · ${fmtSize(data.outputSize)}`;
+    document.getElementById('res-excel2pdf-stats').innerHTML = `
+      <div class="stat-chip"><strong>${data.sheetCount}</strong>Sheets</div>
+      <div class="stat-chip"><strong>${data.pageCount}</strong>PDF Pages</div>
+      <div class="stat-chip"><strong>${fmtSize(data.outputSize)}</strong>Output size</div>
+    `;
+    document.getElementById('dl-excel2pdf').href = data.downloadUrl;
+    document.getElementById('dl-excel2pdf').download = data.filename;
+  }
+
+  else if (tool === 'pdf2excel') {
+    const tc = data.tableCount;
+    document.getElementById('res-pdf2excel-sub').textContent =
+      `${data.pageCount} PDF pages → ${tc} table${tc!==1?'s':''} detected · ${data.sheetCount} Excel sheets · ${fmtSize(data.outputSize)}`;
+    document.getElementById('res-pdf2excel-stats').innerHTML = `
+      <div class="stat-chip"><strong>${data.pageCount}</strong>PDF Pages</div>
+      <div class="stat-chip"><strong>${tc}</strong>Tables found</div>
+      <div class="stat-chip"><strong>${data.sheetCount}</strong>Excel sheets</div>
+      <div class="stat-chip"><strong>${fmtSize(data.outputSize)}</strong>XLSX size</div>
+    `;
+    document.getElementById('dl-pdf2excel').href = data.downloadUrl;
+    document.getElementById('dl-pdf2excel').download = data.filename;
+  }
+
+  else if (tool === 'pdf2word') {
+    document.getElementById('res-pdf2word-sub').textContent =
+      `Converted ${data.pageCount} pages · ${data.wordCount.toLocaleString()} words extracted`;
+    document.getElementById('res-pdf2word-stats').innerHTML = `
+      <div class="stat-chip"><strong>${data.pageCount}</strong>Pages</div>
+      <div class="stat-chip"><strong>${data.wordCount.toLocaleString()}</strong>Words</div>
+      <div class="stat-chip"><strong>${fmtSize(data.outputSize)}</strong>DOCX size</div>
+    `;
+    document.getElementById('dl-pdf2word').href = data.downloadUrl;
+    document.getElementById('dl-pdf2word').download = data.filename;
+  }
+}
+
+// ── PDF → Images (client-side rendering via PDF.js, server ZIP option) ──
+async function runPdf2ImgClient() {
+  const file = state.pdf2img.files[0];
+  if (!file) return;
+  hide('err-pdf2img'); hide('res-pdf2img');
+  show('prog-pdf2img');
+  document.getElementById('btn-pdf2img').disabled = true;
+  state.pdf2img.images = [];
+
+  try {
+    const fmt = document.getElementById('img-format').value;
+    const scale = parseFloat(document.getElementById('img-dpi').value);
+    const ext = fmt === 'image/png' ? 'png' : 'jpg';
+
+    setP('pdf2img', 8, 'Loading PDF...');
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const n = pdf.numPages;
+    document.getElementById('pdf2img-prog-label').textContent = `Rendering ${n} pages...`;
+
+    const grid = document.getElementById('img-grid');
+    grid.innerHTML = '';
+
+    for (let i = 1; i <= n; i++) {
+      setP('pdf2img', Math.round(8 + (i/n)*85), `Page ${i} of ${n}...`);
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      const dataUrl = canvas.toDataURL(fmt, fmt==='image/jpeg' ? 0.93 : 1.0);
+      state.pdf2img.images.push({ dataUrl, name: `page_${i}.${ext}` });
+
+      const card = document.createElement('div');
+      card.className = 'img-result-card';
+      card.innerHTML = `<img src="${dataUrl}" alt="Page ${i}">
+        <div class="img-footer">
+          <span class="img-label">Page ${i}</span>
+          <a class="img-dl" href="${dataUrl}" download="page_${i}.${ext}">⬇️</a>
+        </div>`;
+      grid.appendChild(card);
+    }
+
+    setP('pdf2img', 100, 'Done!');
+    document.getElementById('res-pdf2img-sub').textContent =
+      `${n} page${n>1?'s':''} converted to ${ext.toUpperCase()}`;
+    setTimeout(() => { hide('prog-pdf2img'); show('res-pdf2img'); }, 350);
+  } catch(e) {
+    hide('prog-pdf2img');
+    showErr('pdf2img', e.message);
+    document.getElementById('btn-pdf2img').disabled = false;
+  }
+}
+
+async function zipAndDownloadImages() {
+  const images = state.pdf2img.images;
+  if (!images.length) return notify('No images to zip', 'error');
+  notify('Sending images to server for ZIP...', '');
+  try {
+    const resp = await fetch('/api/pdf2img/zip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ images })
+    });
+    const data = await resp.json();
+    if (data.success) {
+      const a = document.createElement('a');
+      a.href = data.zipUrl; a.download = data.zipName; a.click();
+      notify(`ZIP ready — ${data.imageCount} images`, 'success');
+    } else throw new Error(data.error);
+  } catch(e) { notify('ZIP failed: ' + e.message, 'error'); }
+}
+
+function downloadAllImagesLocal() {
+  state.pdf2img.images.forEach((img, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = img.dataUrl; a.download = img.name; a.click();
+    }, i * 280);
+  });
+}
+
+// ── Drop zone drag events ──
+document.querySelectorAll('.drop-zone').forEach(dz => {
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('dragover');
+    addFilesLocal(dz.id.replace('dz-',''), e.dataTransfer.files);
+  });
+});
+</script>
+</body>
+</html>
