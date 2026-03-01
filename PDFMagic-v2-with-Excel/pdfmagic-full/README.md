@@ -1,4 +1,4 @@
-# PDFMagic — Full-Stack PDF Tools with Node.js Backend
+# All In One File Converter — Full-Stack PDF & File Tools with Node.js Backend
 
 A complete PDF tools web app with a real Express.js backend.
 
@@ -19,7 +19,7 @@ Download from https://nodejs.org (v16+ required)
 
 ### 2. Install dependencies
 ```bash
-cd pdfmagic
+cd allinonefileconverter
 npm install
 ```
 
@@ -37,7 +37,7 @@ http://localhost:3000
 
 ## Project Structure
 ```
-pdfmagic/
+allinonefileconverter/
 ├── server.js              ← Main Express server (port 3000)
 ├── package.json           ← Dependencies
 ├── routes/
@@ -122,7 +122,7 @@ Convert a PDF to a Word (.docx) document.
 ```bash
 # Use PM2 for production
 npm install -g pm2
-pm2 start server.js --name pdfmagic
+pm2 start server.js --name allinonefileconverter
 pm2 save
 
 # With environment variables

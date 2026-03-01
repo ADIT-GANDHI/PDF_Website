@@ -43,6 +43,6 @@ setInterval(() => {
 }, 15 * 60 * 1000);
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 PDFMagic v1.1 running at http://localhost:${PORT}`);
+  console.log(`\n🚀 All In One File Converter v1.1 running at http://localhost:${PORT}`);
   console.log(`✅ Routes: merge, split, compress, pdf2img, img2pdf, pdf2word, excel2pdf, pdf2excel\n`);
 });

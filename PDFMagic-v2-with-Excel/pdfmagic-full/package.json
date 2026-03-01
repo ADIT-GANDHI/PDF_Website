@@ -1,7 +1,7 @@
 {
-  "name": "pdfmagic",
+  "name": "allinonefileconverter",
   "version": "1.1.0",
-  "description": "Full-stack PDF tools — merge, split, compress, convert, Excel↔PDF",
+  "description": "All In One File Converter — merge, split, compress, convert PDFs, Excel, Word, and images",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

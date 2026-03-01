@@ -177,7 +177,7 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
 
     const doc = new Document({
       title: originalName,
-      description: `Converted from ${req.file.originalname} by PDFMagic`,
+      description: `Converted from ${req.file.originalname} by All In One File Converter`,
       styles: {
         default: {
           document: {

@@ -1,4 +1,4 @@
-# PDFMagic — Complete Source Code
+# All In One File Converter — Complete Source Code
 
 ## Two versions included:
 
