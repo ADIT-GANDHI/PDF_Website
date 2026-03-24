@@ -26,7 +26,11 @@ app.use('/api/pdf2word',   require('./routes/pdf2word'));
 app.use('/api/excel2pdf',  require('./routes/excel2pdf'));
 app.use('/api/pdf2excel',  require('./routes/pdf2excel'));
 
-app.use('/outputs', express.static(path.join(__dirname, 'outputs')));
+app.use('/outputs', express.static(path.join(__dirname, 'outputs'), {
+  setHeaders: (res, filePath) => {
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(path.basename(filePath))}"`);
+  }
+}));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', version: '1.1.0' }));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 

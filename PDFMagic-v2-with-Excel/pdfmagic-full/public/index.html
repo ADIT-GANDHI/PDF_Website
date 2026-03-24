@@ -890,6 +890,7 @@ async function apiCall(tool) {
 
     hide('prog-'+tool);
     handleResult(tool, data);
+    document.getElementById('btn-'+tool).disabled = false;
 
   } catch(err) {
     hide('prog-'+tool);

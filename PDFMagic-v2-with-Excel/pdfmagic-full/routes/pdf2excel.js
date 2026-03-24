@@ -279,7 +279,7 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No PDF file uploaded.' });
 
-    const originalName = req.file.originalname.replace(/\.pdf$/i, '');
+    const originalName = req.file.originalname.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
     const buf = fs.readFileSync(req.file.path);
 
     // ── Step 1: Extract text ──
