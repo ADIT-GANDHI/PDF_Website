@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
+const { PDFDocument } = require('pdf-lib');
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak } = require('docx');
 const { v4: uuidv4 } = require('uuid');
 const { uploadPdf, cleanupFiles, outputsDir } = require('./upload');
@@ -128,7 +129,12 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
     }
 
     const originalName = req.file.originalname.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
-    const buf = fs.readFileSync(req.file.path);
+    let buf = fs.readFileSync(req.file.path);
+    // Normalize PDF to ensure pdf-parse compatibility (handles compressed object streams)
+    try {
+      const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: true });
+      buf = Buffer.from(await srcDoc.save({ useObjectStreams: false }));
+    } catch (_) {}
 
     // ── Step 1: Extract text with pdf-parse ──
     let pdfData;
