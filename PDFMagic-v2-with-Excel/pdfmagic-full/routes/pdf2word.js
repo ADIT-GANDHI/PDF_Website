@@ -127,7 +127,7 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No PDF file uploaded.' });
     }
 
-    const originalName = req.file.originalname.replace(/\.pdf$/i, '');
+    const originalName = req.file.originalname.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
     const buf = fs.readFileSync(req.file.path);
 
     // ── Step 1: Extract text with pdf-parse ──
@@ -177,7 +177,7 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
 
     const doc = new Document({
       title: originalName,
-      description: `Converted from ${req.file.originalname} by PDFMagic`,
+      description: `Converted from ${req.file.originalname} by All In One File Converter`,
       styles: {
         default: {
           document: {

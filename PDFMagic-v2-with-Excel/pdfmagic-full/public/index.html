@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDFMagic — Full PDF Suite</title>
+<title>All In One File Converter — Full PDF Suite</title>
+<meta name="description" content="Free, privacy-first file converter. Merge, split, compress, convert PDFs, Excel, Word, and images. Powered by a Node.js backend for maximum accuracy.">
+<link rel="canonical" href="https://allinonefileconverter.com">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://allinonefileconverter.com">
+<meta property="og:title" content="All In One File Converter — Free PDF & Document Tools">
+<meta property="og:description" content="Free, privacy-first file converter. Merge, split, compress, convert PDFs, Excel, Word, and images. All processing on your own server.">
+<meta property="og:image" content="https://allinonefileconverter.com/Gemini_Generated_Image_1516va1516va1516.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="All In One File Converter — Free PDF & Document Tools">
+<meta name="twitter:description" content="Free, privacy-first file converter. Merge, split, compress, convert PDFs, Excel, Word, and images.">
+<meta name="twitter:image" content="https://allinonefileconverter.com/Gemini_Generated_Image_1516va1516va1516.png">
+<link rel="icon" type="image/png" href="/Gemini_Generated_Image_1516va1516va1516.png">
+<link rel="apple-touch-icon" href="/Gemini_Generated_Image_1516va1516va1516.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -26,8 +39,8 @@ nav {
   background: rgba(254,249,240,0.95); backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
-.logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.4rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-.logo span { background: var(--red); color: white; border-radius: 8px; padding: 2px 8px; font-size: 0.95rem; }
+.logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.4rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo img { height: 44px; width: auto; display: block; }
 .nav-badge { font-size: 0.78rem; background: rgba(42,157,143,0.12); color: var(--teal); border: 1px solid rgba(42,157,143,0.25); padding: 4px 12px; border-radius: 100px; font-weight: 500; }
 
 .hero { text-align: center; padding: 64px 5vw 44px; position: relative; }
@@ -215,7 +228,7 @@ input[type=range] { flex: 1; accent-color: var(--red); }
 <body>
 
 <nav>
-  <a href="#" class="logo"><span>PDF</span>Magic</a>
+  <a href="#" class="logo"><img src="/Gemini_Generated_Image_1516va1516va1516.png" alt="AllinoneFileConverter.com"></a>
   <span class="nav-badge">🔒 Files never leave your server</span>
 </nav>
 
@@ -667,7 +680,7 @@ input[type=range] { flex: 1; accent-color: var(--red); }
 </div><!-- /workspace -->
 
 <footer class="footer">
-  <strong>PDFMagic</strong> — Node.js + Express · pdf-lib · pdf-parse · docx · exceljs · PDF.js<br>
+  <strong>All In One File Converter</strong> — Node.js + Express · pdf-lib · pdf-parse · docx · exceljs · PDF.js<br>
   8 tools total · Files auto-deleted after 1 hour · All processing on your own server.
 </footer>
 
@@ -877,6 +890,7 @@ async function apiCall(tool) {
 
     hide('prog-'+tool);
     handleResult(tool, data);
+    document.getElementById('btn-'+tool).disabled = false;
 
   } catch(err) {
     hide('prog-'+tool);

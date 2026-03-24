@@ -125,7 +125,7 @@ function parseTextIntoBlocks(rawText) {
 // ─────────────────────────────────────────────
 async function buildWorkbook(blocks, originalName, options = {}) {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'PDFMagic';
+  workbook.creator = 'All In One File Converter';
   workbook.created = new Date();
 
   // ── Overview sheet with metadata ──
@@ -133,7 +133,7 @@ async function buildWorkbook(blocks, originalName, options = {}) {
   overviewSheet.getColumn(1).width = 20;
   overviewSheet.getColumn(2).width = 50;
 
-  const titleRow = overviewSheet.addRow(['PDFMagic Conversion']);
+  const titleRow = overviewSheet.addRow(['All In One File Converter']);
   titleRow.getCell(1).font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
   titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0D1B2A' } };
   overviewSheet.mergeCells(`A1:B1`);
@@ -141,7 +141,7 @@ async function buildWorkbook(blocks, originalName, options = {}) {
 
   overviewSheet.addRow(['Source file', originalName]);
   overviewSheet.addRow(['Converted on', new Date().toLocaleString()]);
-  overviewSheet.addRow(['Tool', 'PDFMagic — PDF to Excel']);
+  overviewSheet.addRow(['Tool', 'All In One File Converter — PDF to Excel']);
   overviewSheet.addRow([]);
 
   const textBlocks = blocks.filter(b => b.type === 'text');
@@ -279,7 +279,7 @@ router.post('/', uploadPdf.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No PDF file uploaded.' });
 
-    const originalName = req.file.originalname.replace(/\.pdf$/i, '');
+    const originalName = req.file.originalname.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
     const buf = fs.readFileSync(req.file.path);
 
     // ── Step 1: Extract text ──
