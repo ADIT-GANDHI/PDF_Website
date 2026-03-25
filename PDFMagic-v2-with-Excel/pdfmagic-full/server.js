@@ -25,6 +25,8 @@ app.use('/api/img2pdf',    require('./routes/img2pdf'));
 app.use('/api/pdf2word',   require('./routes/pdf2word'));
 app.use('/api/excel2pdf',  require('./routes/excel2pdf'));
 app.use('/api/pdf2excel',  require('./routes/pdf2excel'));
+app.use('/api/pdfeditor',  require('./routes/pdfeditor'));
+app.use('/api/signpdf',    require('./routes/signpdf'));
 
 app.use('/outputs', express.static(path.join(__dirname, 'outputs'), {
   setHeaders: (res, filePath) => {
@@ -48,5 +50,5 @@ setInterval(() => {
 
 app.listen(PORT, () => {
   console.log(`\n🚀 All In One File Converter v1.1 running at http://localhost:${PORT}`);
-  console.log(`✅ Routes: merge, split, compress, pdf2img, img2pdf, pdf2word, excel2pdf, pdf2excel\n`);
+  console.log(`✅ Routes: merge, split, compress, pdf2img, img2pdf, pdf2word, excel2pdf, pdf2excel, pdfeditor, signpdf\n`);
 });
