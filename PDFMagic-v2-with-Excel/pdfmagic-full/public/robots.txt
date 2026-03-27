@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /uploads/
+Disallow: /outputs/
+Disallow: /api/
 
 Sitemap: https://allinonefileconverter.com/sitemap.xml
